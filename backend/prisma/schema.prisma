@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int         @id @default(autoincrement())
+  email       String      @unique
+  password    String
+  role        Role        @relation(fields: [roleId], references: [id])
+  roleId      Int
+  simulations Simulation[]
+  auditLogs   AuditLog[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+}
+
+model Territory {
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  type                String
+  parentId            Int?
+  parent              Territory?           @relation("TerritoryHierarchy", fields: [parentId], references: [id])
+  children            Territory[]          @relation("TerritoryHierarchy")
+  pollingPlaces       PollingPlace[]
+  mobilizationEvents  MobilizationEvent[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model PollingPlace {
+  id          Int     @id @default(autoincrement())
+  name        String
+  territoryId Int
+  territory   Territory @relation(fields: [territoryId], references: [id])
+  tables      Table[]
+  lat         Float?
+  lng         Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Table {
+  id                  Int                  @id @default(autoincrement())
+  number              Int
+  pollingPlaceId      Int
+  pollingPlace        PollingPlace        @relation(fields: [pollingPlaceId], references: [id])
+  electoralAggregates ElectoralAggregate[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model ElectoralAggregate {
+  id          Int     @id @default(autoincrement())
+  tableId     Int
+  table       Table   @relation(fields: [tableId], references: [id])
+  year        Int
+  party       String
+  votes       Int
+  percentage  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MobilizationEvent {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  territoryId Int
+  territory   Territory @relation(fields: [territoryId], references: [id])
+  date        DateTime
+  status      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Simulation {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  parameters  Json
+  results     Json
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  action    String
+  resource  String
+  details   Json?
+  timestamp DateTime @default(now())
+}
