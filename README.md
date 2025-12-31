@@ -32,9 +32,48 @@ Download the project files and extract them into a folder named piito.
 Navigate to the Project Folder:
 
 Open a terminal (Command Prompt on Windows) and go to the piito folder:
-cd path/to/piito
 
+- cd path/to/piito
 
+Run the Application:
+
+Execute the following command to start all services:
+- docker-compose up --build
+
+This will build and start the database, backend, and frontend.
+Access the Application:
+
+Open your web browser and go to http://localhost:3000 for the frontend.
+The backend API is available at http://localhost:3001.
+
+Initial Setup:
+
+The database will be initialized automatically.
+Default admin user: email admin@piito.com, password admin123 (change this immediately in production).
+Log in and start using the platform.
+Step-by-Step for Non-Developers
+Install Docker:
+
+Download and install Docker Desktop from docker.com.
+Download the Project:
+
+This response contains all the code. Create the folder structure as described and copy the code into the respective files.
+
+Run Docker Compose:
+
+In the terminal, run docker-compose up --build.
+Wait for the build to complete (it may take a few minutes the first time).
+Use the Platform:
+
+Register or log in.
+Explore the sidebar menu to navigate modules.
+Upload aggregated data via the admin panel.
+View maps, charts, and run simulations.
+Troubleshooting
+If ports 3000, 3001, or 5432 are in use, stop other applications using them.
+For database issues, check Docker logs: docker-compose logs db.
+If the frontend doesn't load, ensure the backend is running.
+Change JWT_SECRET in docker-compose.yml for security.
 
 
 
