@@ -1,0 +1,23 @@
+piito/
+├── backend/
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── prisma/
+│   │   └── schema.prisma
+│   └── src/
+│       ├── controllers/
+│       ├── middleware/
+│       ├── routes/
+│       ├── utils/
+│       ├── app.js
+│       └── server.js
+├── frontend/
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── public/
+│   ├── src/
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   └── vite.config.js
+├── docker-compose.yml
+└── README.md
