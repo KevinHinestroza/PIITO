@@ -7,6 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/* =========================
+   ENUMS
+========================= */
+
+enum PersonType {
+  VOTER
+  SUPPORTER
+  LEADER
+  UNDECIDED
+}
+
+enum InteractionType {
+  DOOR_TO_DOOR
+  CALL
+  WHATSAPP
+  EVENT
+  MEETING
+}
+
+/* =========================
+   AUTH & RBAC
+========================= */
+
 model User {
   id          Int         @id @default(autoincrement())
   email       String      @unique
@@ -25,52 +48,62 @@ model Role {
   users User[]
 }
 
+/* =========================
+   TERRITORIAL STRUCTURE
+========================= */
+
 model Territory {
-  id                  Int                  @id @default(autoincrement())
-  name                String
-  type                String
-  parentId            Int?
-  parent              Territory?           @relation("TerritoryHierarchy", fields: [parentId], references: [id])
-  children            Territory[]          @relation("TerritoryHierarchy")
-  pollingPlaces       PollingPlace[]
-  mobilizationEvents  MobilizationEvent[]
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  type               String
+  parentId           Int?
+  parent             Territory?           @relation("TerritoryHierarchy", fields: [parentId], references: [id])
+  children           Territory[]          @relation("TerritoryHierarchy")
+  pollingPlaces      PollingPlace[]
+  mobilizationEvents MobilizationEvent[]
+  persons            Person[]
+  interactions       Interaction[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 }
 
 model PollingPlace {
-  id          Int     @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   territoryId Int
   territory   Territory @relation(fields: [territoryId], references: [id])
   tables      Table[]
   lat         Float?
   lng         Float?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Table {
   id                  Int                  @id @default(autoincrement())
   number              Int
   pollingPlaceId      Int
-  pollingPlace        PollingPlace        @relation(fields: [pollingPlaceId], references: [id])
+  pollingPlace        PollingPlace          @relation(fields: [pollingPlaceId], references: [id])
   electoralAggregates ElectoralAggregate[]
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
 }
 
 model ElectoralAggregate {
-  id          Int     @id @default(autoincrement())
-  tableId     Int
-  table       Table   @relation(fields: [tableId], references: [id])
-  year        Int
-  party       String
-  votes       Int
-  percentage  Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  tableId    Int
+  table      Table    @relation(fields: [tableId], references: [id])
+  year       Int
+  party      String
+  votes      Int
+  percentage Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
+
+/* =========================
+   MOBILIZATION & CAMPAIGN
+========================= */
 
 model MobilizationEvent {
   id          Int       @id @default(autoincrement())
@@ -84,6 +117,62 @@ model MobilizationEvent {
   updatedAt   DateTime  @updatedAt
 }
 
+/* =========================
+   PERSONS & PROFILING
+========================= */
+
+model Person {
+  id                      Int       @id @default(autoincrement())
+  personType              PersonType
+  ageRange                String?
+  genderEstimated         String?
+  politicalInterest       Float?
+  affinityScore           Float?
+  voteProbability         Float?
+  mobilizationProbability Float?
+  volatilityIndex         Float?
+  contactChannel          String?
+
+  territoryId             Int
+  territory               Territory @relation(fields: [territoryId], references: [id])
+
+  interactions            Interaction[]
+  strategicProfile        StrategicProfile?
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+}
+
+model Interaction {
+  id          Int              @id @default(autoincrement())
+  personId    Int
+  territoryId Int
+  type        InteractionType
+  outcome     String?
+  impactScore Float?
+  date        DateTime         @default(now())
+
+  person      Person           @relation(fields: [personId], references: [id])
+  territory   Territory        @relation(fields: [territoryId], references: [id])
+}
+
+model StrategicProfile {
+  id                  Int      @id @default(autoincrement())
+  segmentName         String
+  description         String?
+  recommendedStrategy String
+  priority            Int
+
+  personId            Int      @unique
+  person              Person   @relation(fields: [personId], references: [id])
+
+  createdAt           DateTime @default(now())
+}
+
+/* =========================
+   SIMULATION & SCENARIOS
+========================= */
+
 model Simulation {
   id          Int      @id @default(autoincrement())
   name        String
@@ -95,6 +184,20 @@ model Simulation {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model ElectoralScenario {
+  id               Int      @id @default(autoincrement())
+  name             String
+  assumptions      String?
+  projectedTurnout Float
+  expectedVotes    Int
+  riskLevel        Float
+  createdAt        DateTime @default(now())
+}
+
+/* =========================
+   AUDIT & TRACEABILITY
+========================= */
 
 model AuditLog {
   id        Int      @id @default(autoincrement())
