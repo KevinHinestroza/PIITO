@@ -1,20 +1,23 @@
-import { useEffect, useState } from 'react';
-import api from '../utils/api';
-import ChartComponent from '../components/ChartComponent';
+import { analyzePerson } from "../hooks/useAnalytics";
 
-const Analytics = () => {
-  const [data, setData] = useState([]);
+export default function Analytics() {
+  const testPerson = {
+    politicalInterest: 0.6,
+    voteProbability: 0.5,
+    mobilizationProbability: 0.4
+  };
 
-  useEffect(() => {
-    api.get('/analytics').then(res => setData(res.data));
-  }, []);
+  const runAnalysis = async () => {
+    const result = await analyzePerson(testPerson);
+    alert(result.strategicProfile.segmentName);
+  };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl mb-4">Analytics</h1>
-      <ChartComponent data={data} />
+    <div>
+      <h1>Análisis Estratégico</h1>
+      <button onClick={runAnalysis}>
+        Analizar Perfil
+      </button>
     </div>
   );
-};
-
-export default Analytics;
+}
