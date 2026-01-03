@@ -9,6 +9,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import simulationRoutes from './routes/simulationRoutes.js';
 import mobilizationRoutes from './routes/mobilizationRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
+import segmentationRoutes from './routes/segmentationRoutes.js';
 import { auditMiddleware } from './middleware/auditMiddleware.js';
 
 dotenv.config();
@@ -27,5 +28,6 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/simulations', simulationRoutes);
 app.use('/api/mobilization', mobilizationRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/segmentation', segmentationRoutes);
 
 export default app;
