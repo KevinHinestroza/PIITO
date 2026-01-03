@@ -9,6 +9,7 @@ const Sidebar = ({ onLogout }) => {
         <Link to="/analytics" className="block py-2">Analytics</Link>
         <Link to="/simulation" className="block py-2">Simulation</Link>
         <Link to="/mobilization" className="block py-2">Mobilization</Link>
+        <Link to="/segmentation" className="block py-2">🧠 Segmentación Estratégica</Link>
         <Link to="/admin" className="block py-2">Admin</Link>
       </nav>
       <button onClick={onLogout} className="mt-4 bg-red-500 px-4 py-2">Logout</button>
